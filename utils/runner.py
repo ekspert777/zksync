@@ -186,6 +186,7 @@ async def process_mute_liq(private_key: str, pbar: tqdm) -> None:
 async def process_main_bridge(private_key: str, pbar: tqdm) -> None:
     amount_from = MainBridgeConfig.amount_from
     amount_to = MainBridgeConfig.amount_to
+    action_type = MainBridgeConfig.action_type
     main_bridge = MainBridge(
         private_key=private_key,
         amount_from=amount_from,
@@ -193,7 +194,12 @@ async def process_main_bridge(private_key: str, pbar: tqdm) -> None:
     )
 
     logger.info('Bridging on main bridge...')
-    await main_bridge.deposit()
+    if action_type.lower() == 'deposit':
+        await main_bridge.deposit()
+    elif action_type.lower() == 'withdraw':
+        await main_bridge.withdraw()
+    else:
+        logger.error('Unknown action type. Use only: deposit/withdraw')
 
     pbar.update()
 
